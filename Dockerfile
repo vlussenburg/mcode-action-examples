@@ -8,9 +8,8 @@ RUN gcc -g mayhemit.c -o /mayhemit
 FROM debian:10-slim as builder2
 RUN apt-get update && apt-get install -y build-essential wget libc6-dbg
 WORKDIR /build
-RUN wget https://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-1.4.52.tar.gz
-RUN tar xf lighttpd-1.4.52.tar.gz \
-   && cd /build/lighttpd-1.4.52 \
+COPY lighttpd/lighttpd-1.4.15 /build/src
+RUN cd /build/src \
    && CFLAGS=-g ./configure --without-bzip2 --without-pcre --without-zlib --build=x86_64-unknown-linux-gnu \
    && CFLAGS=-g make \
    && CFLAGS=-g make install

@@ -1,0 +1,28 @@
+8
+
+dir
+1768
+svn+ssh://svn@svn.lighttpd.net/lighttpd/tags/lighttpd-1.4.15/tests/docroot/www/dummydir
+svn+ssh://svn@svn.lighttpd.net/lighttpd
+
+
+
+2005-02-12T17:08:04.106079Z
+1
+jan
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+152afb58-edef-0310-8abb-c4023f1b3aa9
+
