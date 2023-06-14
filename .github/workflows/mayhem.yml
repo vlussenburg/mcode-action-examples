@@ -13,6 +13,10 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: 'build'
