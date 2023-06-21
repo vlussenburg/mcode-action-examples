@@ -26,6 +26,7 @@ pipeline {
                 echo 'Building..'
                 sh """
                     echo "Compiling the code..."
+                    export PATH=\${PATH}:~/bin
                     REGISTRY=\$(mayhem-\$(arch) docker-registry)
                     docker build --platform=linux/amd64 -t \${REGISTRY}/lighttpd:${env.BRANCH_NAME} .
                     docker push \${REGISTRY}/lighttpd:${env.BRANCH_NAME}
@@ -38,8 +39,8 @@ pipeline {
                 agent any
                 axes {
                     axis {
-                        name 'MAYHEMFILE'
-                        values 'mayhem/Mayhemfile.lighttpd', 'mayhem/Mayhemfile.mayhemit'
+                        name 'TARGET'
+                        values 'lighttpd', 'mayhemit'
                     }
                 }
                 stages {
@@ -53,8 +54,8 @@ pipeline {
                                   # Run Mayhem
                                   # removed --merge-base-branch-name 
                                   # remove --ci-url 
-                                  echo "mayhem-\$(arch) --verbosity info run . --project forallsecure/mcode-action-examples --owner forallsecure --image \${REGISTRY}/lighttpd:${env.BRANCH_NAME} --file ${MAYHEMFILE} --duration 60 --branch-name ${env.BRANCH_NAME} --revision ${env.GIT_COMMIT} 2>/dev/null"
-                                  run=\$(mayhem-\$(arch) --verbosity info run . --project forallsecure/mcode-action-examples --owner forallsecure --image \${REGISTRY}/lighttpd:${env.BRANCH_NAME} --file ${MAYHEMFILE} --duration 60 --branch-name ${env.BRANCH_NAME} --revision ${env.GIT_COMMIT} 2>/dev/null);
+                                  echo "mayhem-\$(arch) --verbosity info run . --project forallsecure/mcode-action-examples --owner forallsecure --image \${REGISTRY}/lighttpd:${env.BRANCH_NAME} --file mayhem/Mayhemfile.${TARGET} --duration 60 --branch-name ${env.BRANCH_NAME} --revision ${env.GIT_COMMIT} 2>/dev/null"
+                                  run=\$(mayhem-\$(arch) --verbosity info run . --project forallsecure/mcode-action-examples --owner forallsecure --image \${REGISTRY}/lighttpd:${env.BRANCH_NAME} --file mayhem/Mayhemfile.${TARGET} --duration 60 --branch-name ${env.BRANCH_NAME} --revision ${env.GIT_COMMIT} 2>/dev/null);
                                   # Fail if no output was given
                                   if [ -z "\${run}" ]; then exit 1; fi
 
@@ -81,7 +82,7 @@ pipeline {
                         junit 'junit-*.xml'
                         recordIssues(
                             enabledForFailure: true,
-                            tool: sarif(id: 'sarif-' + env.EXECUTOR_NUMBER, pattern: 'sarif-*.sarif')
+                            tool: sarif(id: "sarif-${TARGET}", pattern: 'sarif-*.sarif')
                         )
                     }
                 }

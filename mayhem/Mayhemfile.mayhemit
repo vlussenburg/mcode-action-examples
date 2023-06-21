@@ -10,3 +10,5 @@ tasks:
   - name: coverage_analysis
 cmds:
   - cmd: /mayhemit @@
+    env:
+      AFL_INST_LIBS: "0"
