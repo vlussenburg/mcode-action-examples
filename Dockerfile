@@ -1,6 +1,6 @@
 FROM debian:buster-slim as builder1
 RUN apt-get update && \
-    apt-get install -y gcc make libc6-dbg
+   apt-get install -y gcc make libc6-dbg
 COPY mayhemit-c/mayhemit.c .
 # complile with coverage
 RUN gcc -g mayhemit.c -o /mayhemit
@@ -11,6 +11,7 @@ WORKDIR /build
 RUN wget https://github.com/lighttpd/lighttpd1.4/archive/refs/tags/lighttpd-1.4.15.tar.gz
 RUN tar xf lighttpd-1.4.15.tar.gz \
    && cd /build/lighttpd1.4-lighttpd-1.4.15 \
+   && sed -e s/AM_C_PROTOTYPES/AC_C_PROTOTYPES/g -i configure.in \
    && ./autogen.sh \
    && CFLAGS=-g ./configure --without-bzip2 --without-pcre --without-zlib --build=x86_64-unknown-linux-gnu \
    && CFLAGS=-g make \
