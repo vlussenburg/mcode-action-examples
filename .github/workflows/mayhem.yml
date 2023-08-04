@@ -86,22 +86,27 @@ jobs:
           mayhem-url: ${{ secrets.MAYHEM_URL }}
           mayhem-token: ${{ secrets.MAYHEM_TOKEN }}
           args: --image ${{ needs.build.outputs.image }} --file ${{ matrix.mayhemfile }} --duration 60
+          owner: forallsecure-demo
+          fail-on-defects: true
           sarif-output: sarif
           junit-output: junit
           coverage-output: coverage
 
       - name: Upload SARIF file(s)
+        if: always()
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: sarif
 
       - name: Upload JUNIT file(s)
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: junit
           path: junit
 
       - name: Upload coverage to Codecov
+        if: always()
         uses: codecov/codecov-action@v3
         with:
           files: coverage/*.lcov
