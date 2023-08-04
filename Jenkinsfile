@@ -52,10 +52,7 @@ pipeline {
                                   REGISTRY=\$(mayhem-\$(arch) docker-registry)
 
                                   # Run Mayhem
-                                  # removed --merge-base-branch-name 
-                                  # remove --ci-url 
-                                  echo "mayhem-\$(arch) --verbosity info run . --project forallsecure/mcode-action-examples --owner forallsecure --image \${REGISTRY}/lighttpd:${env.BRANCH_NAME} --file mayhem/Mayhemfile.${TARGET} --duration 60 --branch-name ${env.BRANCH_NAME} --revision ${env.GIT_COMMIT} 2>/dev/null"
-                                  run=\$(mayhem-\$(arch) --verbosity info run . --project forallsecure/mcode-action-examples --owner forallsecure --image \${REGISTRY}/lighttpd:${env.BRANCH_NAME} --file mayhem/Mayhemfile.${TARGET} --duration 60 --branch-name ${env.BRANCH_NAME} --revision ${env.GIT_COMMIT} 2>/dev/null);
+                                  run=\$(mayhem-\$(arch) --verbosity info run . --project forallsecure-demo/mcode-action-examples/${TARGET} --owner forallsecure-demo --image \${REGISTRY}/lighttpd:${env.BRANCH_NAME} --file mayhem/Mayhemfile.${TARGET} --duration 60 --branch-name ${env.BRANCH_NAME} --revision ${env.GIT_COMMIT} 2>/dev/null);
                                   # Fail if no output was given
                                   if [ -z "\${run}" ]; then exit 1; fi
 
@@ -63,11 +60,9 @@ pipeline {
                                   runName=\$(echo \${run} | awk -F / '{ print \$(NF-1) }');
 
                                   # Wait for job to complete and artifacts to be ready
-                                  mayhem-\$(arch) --verbosity info wait \${run} --owner forallsecure --sarif sarif-\${runName}.sarif --junit junit-\${runName}.xml;
-                                  status=\$(mayhem-\$(arch) --verbosity info show --owner forallsecure --format json \${run} | jq '.[0].status')
+                                  mayhem-\$(arch) --verbosity info wait \${run} --owner forallsecure-demo --fail-on-defects --sarif sarif-\${runName}.sarif --junit junit-\${runName}.xml;
+                                  status=\$(mayhem-\$(arch) --verbosity info show --owner forallsecure-demo --format json \${run} | jq '.[0].status')
                                   if [[ \${status} == *"stopped"* || \${status} == *"failed"* ]]; then exit 2; fi
-                                  defects=\$(mayhem-\$(arch) --verbosity info show --owner forallsecure --format json \${run} | jq '.[0].defects|tonumber')
-                                  if [[ \${defects} -gt 0 ]]; then echo "\${defects} defects found!"; exit 3; fi
                                """
                         }
                     }
