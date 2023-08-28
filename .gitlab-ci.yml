@@ -28,25 +28,23 @@ mcode-test-job:
   before_script:
     # Get GitLab username and set <username>/<repo> to lowercase
     - GITLAB_USERNAME=forallsecure-demo
-    - LOWER_REPO_SLUG=forallsecure-demo/mcode-action-examples
+    - LOWER_REPO_SLUG=mayhem-forallsecure/mcode-action-examples
   script:
     # Download Mayhem CLI and log in to the Mayhem server
     - apt-get update && apt-get install -y curl jq
-    - mkdir -p ~/bin
-    - export PATH=${PATH}:~/bin
-    - curl --no-progress-meter -Lo ~/bin/mayhem-x86_64 ${MAYHEM_URL}/cli/Linux/mayhem  && chmod +x ~/bin/mayhem-x86_64
-    - MAYHEM_PROMPT=1 mayhem-$(arch) login --url ${MAYHEM_URL} --token ${MAYHEM_TOKEN}
+    - curl --no-progress-meter -Lo mayhem-cli ${MAYHEM_URL}/cli/Linux/mayhem && chmod +x mayhem-cli
+    - MAYHEM_PROMPT=1 ./mayhem-cli login --url ${MAYHEM_URL} --token ${MAYHEM_TOKEN}
     # Execute Mayhem run and fail if no run was executed
-    - run=$(mayhem-$(arch) --verbosity info run . --project $LOWER_REPO_SLUG/${MAYHEMFILE} --owner forallsecure-demo --image ${REGISTRY}/${LOWER_REPO_SLUG}:${CI_COMMIT_REF_NAME} --file ${MAYHEMFILE} --duration 60 --branch-name ${CI_COMMIT_REF_NAME} --revision ${CI_COMMIT_SHA} --ci-url ${CI_PIPELINE_URL} 2>/dev/null);
+    - run=$(./mayhem-cli --verbosity info run . --project forallsecure-demo/mcode-action-examples/${TARGET} --owner ${GITLAB_USERNAME} --image ${REGISTRY}/${LOWER_REPO_SLUG}:${CI_COMMIT_REF_NAME} --file mayhem/Mayhemfile.${TARGET} --duration 60 --branch-name ${CI_COMMIT_REF_NAME} --revision ${CI_COMMIT_SHA} --ci-url ${CI_PIPELINE_URL});
     - if [ -z "${run}" ]; then exit 1; fi
     # Otherwise, determine run name and wait for job to complete and artifacts to be ready
     - runName=$(echo ${run} | awk -F / '{ print $(NF-1) }');
-    - mayhem-$(arch) --verbosity info wait ${run} --fail-on-defects --owner $GITLAB_USERNAME --sarif sarif-${runName}.sarif --junit junit-${runName}.xml;
-    - status=$(mayhem-$(arch) --verbosity info show --owner $GITLAB_USERNAME --format json ${run} | jq '.[0].status')
+    - ./mayhem-cli --verbosity info wait ${run} --fail-on-defects --owner ${GITLAB_USERNAME} --sarif sarif-${runName}.sarif --junit junit-${runName}.xml;
+    - status=$(./mayhem-cli --verbosity info show --owner ${GITLAB_USERNAME} --format json ${run} | jq '.[0].status')
     - if [[ ${status} == *"stopped"* || ${status} == *"failed"* ]]; then exit 2; fi
   parallel:
     matrix:
-      - MAYHEMFILE: ['mayhem/Mayhemfile.lighttpd', 'mayhem/Mayhemfile.mayhemit']
+      - TARGET: ['lighttpd', 'mayhemit']
   artifacts:
     when: always
     paths:
