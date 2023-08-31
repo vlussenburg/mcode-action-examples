@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y build-essential wget libc6-dbg autoconf
 WORKDIR /build
 COPY lighttpd/lighttpd-source /build/src
 RUN cd /build/src \
+   && sed -e s/AM_C_PROTOTYPES/AC_C_PROTOTYPES/g -i configure.in \
    && ./autogen.sh \
    && CFLAGS=-g ./configure --without-bzip2 --without-pcre --without-zlib --build=x86_64-unknown-linux-gnu \
    && CFLAGS=-g make \
