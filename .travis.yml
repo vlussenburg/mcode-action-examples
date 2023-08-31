@@ -1,0 +1,37 @@
+services:
+  - docker
+
+stages:
+  - build
+
+jobs:
+  include:
+    - stage: build
+      name: "Build Job"
+      script:
+        # Build and push Docker image to registry
+        - docker login ghcr.io -u $GITHUB_USERNAME -p $GITHUB_TOKEN
+        - docker build -f Dockerfile -t ghcr.io/$REPO_SLUG:$TRAVIS_BRANCH .
+        - docker push ghcr.io/$REPO_SLUG:$TRAVIS_BRANCH
+
+env:
+  global:
+    # Set <username>/<repo> to lowercase
+    - REPO_SLUG=$(echo "$TRAVIS_REPO_SLUG" | tr '[:upper:]' '[:lower:]')
+  jobs:
+    # Specify one or more Mayhemfiles for testing
+    - MAYHEMFILE=mayhem/Mayhemfile.lighttpd
+    - MAYHEMFILE=mayhem/Mayhemfile.mayhemit
+
+script:
+  # Download Mayhem CLI and log in to Mayhem server
+  - curl -Lo ~/bin/mayhem ${MAYHEM_URL}/cli/Linux/mayhem && chmod +x ~/bin/mayhem
+  - mayhem login $MAYHEM_URL $MAYHEM_TOKEN
+  # Execute Mayhem run and fail if no run was executed
+  - run=$(mayhem --verbosity info run . --project $REPO_SLUG/${MAYHEMFILE} --owner forallsecure-demo --image ghcr.io/$REPO_SLUG:$TRAVIS_BRANCH --file ${MAYHEMFILE} --duration 60 --branch-name $TRAVIS_BRANCH --revision $TRAVIS_COMMIT --ci-url https://app.travis-ci.com/github/$TRAVIS_REPO_SLUG/jobs/$TRAVIS_JOB_ID 2>/dev/null);
+  - if [ -z "${run}" ]; then exit 1; fi
+  # Otherwise, determine run name and wait for job to complete
+  - runName=$(echo ${run} | awk -F / '{ print $(NF-1) }');
+  - travis_wait 30 mayhem --verbosity info wait ${run} --fail-on-defects --owner forallsecure-demo --sarif sarif-${runName}.sarif --junit junit-${runName}.xml;
+  - status=$(mayhem --verbosity info show --owner forallsecure-demo --format json ${run} | jq '.[0].status')
+  - if [[ ${status} == *"stopped"* || ${status} == *"failed"* ]]; then exit 2; fi

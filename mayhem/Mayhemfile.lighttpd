@@ -1,7 +1,7 @@
 image: forallsecure/lighttpd:vulnerable        # fields are unnecessary
 duration: 60                                   # since they will
-project: forallsecure/lighttpd                 # be filled at
-target: lighttpd                               # run creation time
+project: forallsecure/lighttpd                 # be filled at run creation time
+target: lighttpd
 advanced_triage: true
 tasks:
   - name: exploitability_factors
