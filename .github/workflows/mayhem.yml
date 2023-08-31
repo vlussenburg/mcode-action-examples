@@ -113,4 +113,5 @@ jobs:
         with:
           files: coverage/*.lcov
           flags: vulnerability-tests
+          functionalities: recursesubs
           name: mayhem
