@@ -1,6 +1,6 @@
 # Mayhem for Code: Example CI Integration
 
-[![Mayhem for Code](https://drive.google.com/uc?export=view&id=1JXEbfCDMMwwnDaOgs5-XlPWQwZR93fv4)](http://mayhem.forallsecure.com/)
+[![Mayhem for Code](https://drive.google.com/uc?export=view&id=1JXEbfCDMMwwnDaOgs5-XlPWQwZR93fv4)](https://app.mayhem.security/)
 
 A GitHub Action walk through for using Mayhem for Code to check for reliability, performance, and security issues in your application binary (packaged as a containerized [Docker](https://docs.docker.com/get-started/overview/) image) as a part of a CI pipeline.
 
@@ -38,14 +38,16 @@ The `vulnerable` branch contains the following vulnerable targets:
 
 1. Fork this repository and create a Mayhem account to copy and paste your account token to GitHub Secrets for your repository:
 
-    1. Navigate to [mayhem.forallsecure.com](https://mayhem.forallsecure.com/) to register an account.
+    1. Navigate to [app.mayhem.security](https://app.mayhem.security/) to register an account.
 
-    2. Click your profile drop-down and go to *Settings* > *API Tokens* to access your account API token.
+    2. After logging in, on the bottom left:
+       1. Click your profile icon.
+       2. Click Account Settings.
+       3. Switch to *API Tokens* section to access your account API token.
 
     3. Copy and paste your Mayhem token to your forked repo's [GitHub Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-an-organization). You will need the following secrets configured for your repository:
 
         * `MAYHEM_TOKEN`: Your Mayhem account API token.
-        * `MAYHEM_URL`: The URL of the Mayhem instance, such as `https://mayhem.forallsecure.com`.
 
 2. On the `main` branch, navigate to your GitHub repository `Actions` tab and execute a CI pipeline for the `main` branch (assuming this is not already done automatically). This will build and push the `lighttpd 1.4.52` and `c-base-executable` containerized applications to the GitHub Container Registry and use Mayhem to fuzz the resulting Docker image. In addition, since no vulnerable versions are present on the mainline no issues will be reported in the `Security` tab.
 
@@ -59,5 +61,5 @@ Congrats! You just integrated Mayhem in a multi-target CI pipeline for the `ligh
 
 ForAllSecure was founded with the mission to make the world’s critical software safe. The company has been applying its patented technology from over a decade of CMU research to solving the difficult challenge of making software safer. ForAllSecure has partnered with Fortune 1000 companies in aerospace, automotive and high-tech industries, as well as the US Department of Defense to integrate Mayhem into software development cycles for continuous security. Profitable and revenue-funded, the company is scaling rapidly.
 
-* [https://forallsecure.com/](https://forallsecure.com/)
-* [https://forallsecure.com/mayhem-for-code](https://forallsecure.com/mayhem-for-code)
+* [https://mayhem.security/](https://mayhem.security/)
+* [https://mayhem.security/code-security](https://mayhem.security/code-security)
