@@ -7,7 +7,7 @@ COPY mayhemit-c/mayhemit.c .
 RUN gcc -g mayhemit.c -o /mayhemit
 
 FROM debian:10-slim as builder2
-RUN apt-get update && apt-get install -y build-essential wget libc6-dbg autoconf automake libtool pkg-config
+RUN apt-get update && apt-get install -y build-essential wget libc6-dbg autoconf automake libtool pkg-config sed
 WORKDIR /build
 
 # Note: it's important that the docker image path is similar to Github path for codecov to find the right files
