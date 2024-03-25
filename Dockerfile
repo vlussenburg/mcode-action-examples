@@ -14,6 +14,7 @@ WORKDIR /build
 COPY lighttpd/lighttpd-source /build/lighttpd/lighttpd-source
 
 RUN cd /build/lighttpd/lighttpd-source \
+   && sed -e s/AM_C_PROTOTYPES/AC_C_PROTOTYPES/g -i configure.in \
    && ./autogen.sh \
    && CFLAGS=-g ./configure --without-bzip2 --without-pcre --without-zlib --build=x86_64-unknown-linux-gnu \
    && CFLAGS=-g make \
