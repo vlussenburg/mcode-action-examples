@@ -7,15 +7,15 @@ COPY mayhemit-c/mayhemit.c .
 RUN gcc -g mayhemit.c -o /mayhemit
 
 FROM debian:10-slim as builder2
-RUN apt-get update && apt-get install -y build-essential wget libc6-dbg autoconf automake libtool pkg-config sed
+RUN apt-get update && apt-get install -y build-essential wget libc6-dbg autoconf automake libtool pkg-config
 WORKDIR /build
 
 # Note: it's important that the docker image path is similar to Github path for codecov to find the right files
 COPY lighttpd/lighttpd-source /build/lighttpd/lighttpd-source
 
 RUN cd /build/lighttpd/lighttpd-source \
-   && sed -e s/AM_C_PROTOTYPES/AC_C_PROTOTYPES/g -i configure.in \
    && ./autogen.sh \
+   && sed -e s/AM_C_PROTOTYPES/AC_C_PROTOTYPES/g -i configure.in \
    && CFLAGS=-g ./configure --without-bzip2 --without-pcre --without-zlib --build=x86_64-unknown-linux-gnu \
    && CFLAGS=-g make \
    && CFLAGS=-g make install
