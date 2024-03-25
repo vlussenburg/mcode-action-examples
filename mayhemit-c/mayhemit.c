@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <signal.h>
 
 int mayhemit(char *buf)
 {
@@ -8,7 +9,7 @@ int mayhemit(char *buf)
       if(buf[1] == 'u')
         if(buf[2] == 'g') {
           printf("You've got it!");
-          // abort();
+          raise(SIGABRT);
         }
     return 0;
 }
